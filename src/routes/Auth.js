@@ -1,5 +1,5 @@
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
 import { authService } from 'fbase';
 import { useState } from 'react';
 
@@ -34,8 +34,18 @@ const Auth = () => {
         }
     }
     const toggleAccount = () => setNewAccount((prev) => !prev);
-    const onSocialClick = (event) => {
-        console.log(event.target.name);
+    const onSocialClick = async(event) => {
+        const {
+            target : { name },
+        } = event;
+        let provider;
+        if (name === 'google') {
+            provider = new GoogleAuthProvider();
+        } else if (name === 'github') {
+            provider = new GithubAuthProvider();
+        }
+        const data = await signInWithPopup(authService, provider);
+        console.log(data);
     }
     return (
         <div>
