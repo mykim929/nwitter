@@ -28,7 +28,7 @@ const Home = ({ userObj }) => {
     const onSubmit = async(event) => {
         event.preventDefault();
         try {
-            const docRef = await addDoc(collection(dbService, 'nweets'), {
+            await addDoc(collection(dbService, 'nweets'), {
                 text: nweet,
                 createdAt: Date.now(),
                 creatorId: userObj.uid,
