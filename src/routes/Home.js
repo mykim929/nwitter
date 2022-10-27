@@ -29,23 +29,14 @@ const Home = ({ userObj }) => {
     }, []);
     const onSubmit = async(event) => {
         event.preventDefault();
-        // try {
-        //     await addDoc(collection(dbService, 'nweets'), {
-        //         text: nweet,
-        //         createdAt: Date.now(),
-        //         creatorId: userObj.uid,
-        //     });
-        //     setNweet("");
-        // } catch (e) {
-        //     console.error('Error adding document: ', e);
-        // }
-        const attachmentRef = ref(storageService, `${userObj.uid}/${uuidv4()}`);
-        const response = await uploadString(attachmentRef, "data_url");
         let attachmentUrl = '';
-        await getDownloadURL(attachmentRef).then((url) => {
-            attachmentUrl = url;
-        })
-
+        if (attachment !== ""){
+            const attachmentRef = ref(storageService, `${userObj.uid}/${uuidv4()}`);
+            await uploadString(attachmentRef, attachment, "data_url");
+            await getDownloadURL(attachmentRef).then((url) => {
+                attachmentUrl = url;
+            })
+        }
         try {
             await addDoc(collection(dbService, 'nweets'), {
                 text: nweet,
@@ -80,7 +71,7 @@ const Home = ({ userObj }) => {
             } = finishedEvent;
             setAttachment(result);
         }
-        reader.readAsDataURL(theFile);
+        reader.readAsDataURL(theFile); 
     }
     const onClearAttachment = () => setAttachment("");
     return (

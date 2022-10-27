@@ -1,17 +1,20 @@
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { dbService } from "fbase";
+import { ref, deleteObject } from 'firebase/storage';
+import { dbService, storageService } from "fbase";
 import { useState } from 'react';
-import { async } from '@firebase/util';
 
 const Nweet = ({ nweetObj, isOwner}) => {
     const [editing, setEditing] = useState(false);
     const [newNweet, setNewNweet] = useState(nweetObj.text);
     const onDeleteClick = async() => {
         const ok = window.confirm('삭제하시겠습니까?');
-        if(ok) {
-            console.log(nweetObj.id);
-            const data = await deleteDoc(doc(dbService, `nweets/${nweetObj.id}`));
-            console.log(data);
+        if (ok) {
+            await deleteDoc(doc(dbService, `nweets/${nweetObj.id}`));
+            if (nweetObj.attachmentUrl !== "") {
+                // await storageService
+                const desertRef = await ref(storageService, nweetObj.attachmentUrl);
+                deleteObject(desertRef);
+            }
         }
     };
     const toggleEditing = () => setEditing((prev) => !prev);
