@@ -2,6 +2,9 @@ import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 import { dbService, storageService } from "fbase";
 import { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import dayjs from 'dayjs';
 
 const Nweet = ({ nweetObj, isOwner}) => {
     const [editing, setEditing] = useState(false);
@@ -26,19 +29,19 @@ const Nweet = ({ nweetObj, isOwner}) => {
     }
     const onSubmit = async(event) => {
         event.preventDefault();
-        console.log(nweetObj.id, newNweet);
         await updateDoc(doc(dbService, `nweets/${nweetObj.id}`), {text: newNweet});
         setEditing(false);
     }
+    const date = dayjs(new Date(nweetObj.createdAt)).format('YYYY-MM-DD HH:mm A');
     return (
-        <div>
+        <div className="nweet">
             {editing ? (
                 <>
-                    <form onSubmit={onSubmit}>
-                        <input value={newNweet} onChange={onChange} required />
-                        <input type="submit" value="Update Nweet" />
+                    <form onSubmit={onSubmit} className="container nweetEdit">
+                        <input value={newNweet} onChange={onChange} placeholder="Edit your nweet" className="formInput" autofocus required />
+                        <input type="submit" value="Update Nweet" className="formBtn" />
                     </form>
-                    <button onClick={toggleEditing}>Cancel</button>
+                    <button onClick={toggleEditing} className="formBtn cancelBtn">Cancel</button>
                 </>
             ) : (
                 <>
@@ -46,11 +49,15 @@ const Nweet = ({ nweetObj, isOwner}) => {
                     {nweetObj.attachmentUrl && (
                         <img src={nweetObj.attachmentUrl} width="50px" height="50px" />
                     )}
+                    <div className="info">
+                        <p><strong>User</strong> : {nweetObj.displayName}</p>
+                        <p><strong>Date</strong> : {dayjs(new Date(nweetObj.createdAt)).format('YYYY-MM-DD A hh:mm')}</p>
+                    </div>
                     {isOwner && (
-                        <>
-                            <button onClick={onDeleteClick}>Delete Nweet</button>
-                            <button onClick={toggleEditing}>Edit Nweet</button>
-                        </>
+                        <div className="nweet__actions">
+                            <span onClick={onDeleteClick}><FontAwesomeIcon icon={faTrash} /></span>
+                            <span onClick={toggleEditing}><FontAwesomeIcon icon={faPencilAlt} /></span>
+                        </div>
                     )}
                 </>
             )}
